@@ -1,0 +1,341 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Template for UEx - EII documents
+% José Emilio Traver Becerra & David Palomeque Mangut
+% Use at your own risk, send complaints to {jotraverb,dpalomeq}@alumnos.unex.es
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,openright,titlepage,12pt]{article}
+
+% --------------------------
+% Información del documentos
+% --------------------------
+\newcommand{\myTitle}{ANÁLISIS Y CÁLCULO DE LA VELOCIDAD DE AVANCE GENERADA POR EL MOVIMIENTO DE ONDA VIAJERA MEDIANTE INTEGRACIÓN NUMÉRICA}
+\newcommand{\MyTitle}{Análisis y simulación de AFB por \textit{traveling wave}}
+\newcommand{\Asignatura}{}
+\newcommand{\Degree}{}
+\newcommand{\myName}{Nombre Apllido1 Apellido2 (alumno)}
+\newcommand{\myProf}{Nombre Apllido1 Apellido2 (tutor1)}
+\newcommand{\myOtherProf}{Nombre Apllido1 Apellido2 (tutor2)}
+\newcommand{\president}{Nombre Apllido1 Apellido2 (Presidente)}
+\newcommand{\vocal}{Nombre Apllido1 Apellido2 (Vocal)}
+\newcommand{\secretary}{Nombre Apllido1 Apellido2 (Secretario)}
+\newcommand{\myFaculty}{ESCUELA DE INGENIERÍAS INDUSTRIALES}
+\newcommand{\myFacultyShort}{E.I.I.}
+\newcommand{\myDepartment}{...}
+\newcommand{\myUni}{\protect{UNIVERSIDAD DE EXTREMADURA}}
+\newcommand{\myLocation}{BADAJOZ}
+\newcommand{\myTime}{\MakeUppercase{\today}}
+\newcommand{\myVersion}{Version 1.2}
+
+
+%---------------------------------------
+% Paquetes
+%---------------------------------------
+\usepackage[spanish]{babel}
+\usepackage{vmargin}													% Margenes
+\usepackage{setspace}
+\usepackage{fancyhdr}			   										% Cabeceras
+\usepackage[table]{xcolor	}											% Color
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{cite} 														% Para contraer referencias
+\usepackage{appendix}												% Para los Anexos.
+\usepackage{graphics} 													% Figuras.
+\usepackage[justification=centering]{caption}				% Para centrar captions
+\usepackage{setspace}													% Modificar el valor del interlineado.
+\usepackage[square,sort,comma,numbers]{natbib}		% Bibligrafia	
+\usepackage{titlesec}													% Títulos
+\usepackage{url}															% URLs
+\usepackage[hidelinks]{hyperref} 									% Referencias
+\usepackage{enumitem}												% Para enumerar las listas como "X" en vez de "X."
+\usepackage{amsmath}													% Entorno matemático.
+\usepackage{unicode-math}											% Cambiar fuente de entorno matemático.
+\setmathfont{Cambria Math}											% Esta fuente contiene los símbolos.	
+%\usepackage{mathastext}											% Fuente en non-italic.
+\usepackage{gensymb}
+\usepackage{scrextend}
+\usepackage{emptypage}   											% Paginas en Blanco
+\usepackage{appendix} 												% Anexos
+\usepackage{listings}													% Inserter líneas de código
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode} % Identificación del lenguaje de Matlab y C
+\usepackage{listings}
+
+% --------------
+% Caligrafía 
+% ----------------
+\usepackage{fontspec}
+%\setmainfont{Calibri}
+%\setsansfont{Arial Narrow}
+
+% Letra Charter
+%\usepackage[bitstream-charter]{mathdesign} 
+\usepackage{textcomp} %Paquete para algunos caracteres especiales
+
+% --------------
+% Definir Margenes
+% --------------
+\setmargins{2cm}       % margen izquierdo
+{2.5cm}                % margen superior
+{17cm}                      % anchura del texto
+{23.43cm}                    % altura del texto
+{1.27cm}                           % altura de los encabezados
+{0.5cm}                           % espacio entre el texto y los encabezados
+{1.27cm}                             % altura del pie de página
+{30pt}                           % espacio entre el texto y el pie de página
+
+
+% ----------------
+% Alineación y formato de títulos
+% ----------------
+\setlength\parindent{0pt}
+\setlength{\parskip}{-0.2cm}
+
+\titlespacing\section{0pt}{14pt plus 4pt minus 2pt}{14pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{14pt plus 4pt minus 2pt}{14pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{14pt plus 4pt minus 2pt}{14pt plus 2pt minus 2pt}
+\titleformat*{\subsubsection}{\large\bfseries}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1.8em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1.5em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+%--------------
+% Tamaños de letras
+%--------------
+\renewcommand{\small}{\fontsize{10}{12}}					% Small -> 10 pt
+
+% -----------------------
+% Cabeceras y Pie de pagina
+% -----------------------
+\pagestyle{fancy}
+\lhead{\fontsize{9}{9} \myTitle \\}
+% Modifica el tamaño y la fuente de los pies de página.
+\fancyfoot[C]{\thepage \fontsize{9pt}{11pt} }
+% Modifica el tamaño de la cabecera (Parte izquierda)
+\fancyhead[R]{\scshape \nouppercase{\leftmark} \fontsize{8}{8}}	
+\renewcommand{\headrulewidth}{0.4pt} % grosor de la línea de la cabecera
+\renewcommand{\footrulewidth}{0.4pt} % grosor de la línea del pie
+
+% --------------------
+% Epigrafe Tablas y Figuras
+% ---------------------
+\captionsetup[figure]{margin=40pt,labelfont={bf,footnotesize},textfont={bf,footnotesize},labelsep=space}
+\captionsetup[table]{margin=40pt,labelfont={bf,footnotesize},textfont={bf,footnotesize},labelsep=space}
+
+\renewcommand{\tablename}{Tabla} 											% Cambia la palabra "Cuadro" por "Tabla"
+\renewcommand\thefigure{\arabic{section}.\arabic{figure}} 			% Genera numeración X.Y
+\renewcommand\thetable{\arabic{section}.\arabic{table}} 			% Genera numeración X.Y
+
+% Numera las Ecuaciones, Figuras y Tablas como X.Y (SECTION.NUMBER)
+\numberwithin{figure}{section} 													% Hace que la primera figura de cada sección X sea X.1
+\numberwithin{table}{section} 														% Hace que la primera tabla de cada sección X sea X.1
+\numberwithin{equation}{section}
+
+% ------------------------
+% Nueva Seccion por pagina
+% ------------------------
+\newcommand{\sectionbreak}{\newpage}
+
+% ----------------------------------------
+% Eliminar punto después de la numeración 
+% ----------------------------------------
+\titlelabel{\thetitle \hspace{10mm}}
+
+% -------------------------------------------
+% Subnivel 4º de sección.
+% -------------------------------------------
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand\theparagraph{\thesubsubsubsection.\arabic{paragraph}} 
+\titleformat{\subsubsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+  {3.25ex \@plus1ex \@minus.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{1}
+\def\toclevel@paragraph{5}
+\def\toclevel@paragraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{6}
+
+% --------------------------------
+% Márgen izquierdo de la Bibliografía
+% --------------------------------
+\makeatletter
+\renewenvironment{thebibliography}[1]
+{\section*{\bibname}%
+	\@mkboth{\MakeUppercase\refname}{\MakeUppercase\bibname}%
+	\list{\@biblabel{\@arabic\c@enumiv}}%
+	{\settowidth\labelwidth{\@biblabel{#1}}%
+		\leftmargin\labelsep
+		\itemindent1em
+		\@openbib@code
+		\usecounter{enumiv}%
+		\let\p@enumiv\@empty
+		\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+	\sloppy
+	\clubpenalty4000
+	\@clubpenalty \clubpenalty
+	\widowpenalty4000%
+	\sfcode`\.\@m}
+{\def\@noitemerr
+	{\@latex@warning{Empty `thebibliography' environment}}%
+	\endlist}
+\makeatother
+
+% ------------
+% Anexos
+% ------------
+\renewcommand{\appendixname}{ANEXOS}			% ANEXOS en vez de Apéndices
+\renewcommand{\appendixtocname}{ANEXOS}		%
+\renewcommand{\appendixpagename}{ANEXOS}	%
+
+% --------------
+% Numeraciones
+% --------------
+\renewcommand{\labelitemi}{$\bullet$}				% Cambia la muesca en las numeraciones a círculos
+
+%-----------
+% Estilo URL
+%-----------
+\urlstyle{same}																% URLs en Calibri.
+\hypersetup{
+	colorlinks,
+	citecolor=black,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=blue																% URLs de color azul.
+}
+	
+
+% --------------
+% Colores
+% --------------
+\definecolor{lightgray}{gray}{0.9}
+\definecolor{rosa}{rgb}{1,0.5,0.5}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\definecolor{Darkgreen}{rgb}{0.0, 0.26, 0.15}
+%red, green, blue, yellow, cyan, magenta, black, white
+
+
+% ---------------------
+% Ruta de búsqueda de las figuras
+%---------------------
+\graphicspath {{Figuras/}}
+
+
+% -------------------%
+% -------------------%
+\begin{document}%----%
+% -------------------%
+% -------------------%
+
+%---------------------------------------
+% Portada
+\input{Portada/Portada}
+%---------------------------------------
+
+
+
+%---------------------------------------
+%Tabla de contenidos
+%---------------------------------------
+\renewcommand{\thepage}{\Roman{page}}		% Numeración en números romanos
+\renewcommand{\contentsname}{ÍNDICE}			% INDICE en mayúsculas
+\begin{spacing}{1.5}
+	\tableofcontents
+\end{spacing}
+\newpage
+\renewcommand{\thepage}{\arabic{page}}		% Numeración en números arábicos
+\setcounter{page}{2}											% Contador a cero
+
+%---------------------------------------
+% Justificación 
+%---------------------------------------
+\sloppy 
+
+
+%--------------- CUERPO DEL DOCUMENTO ----------------
+
+%---------------------------------------
+% Capítulo 1: INTRODUCCIÓN 
+%---------------------------------------
+% Planteamiento del problema
+\include{Capitulos/1_introduccion}
+
+%---------------------------------------
+% Capítulo 2: 
+%---------------------------------------
+% Resolución del problema a pequeñas dimensiones. Se desprecian los términos cuadráticos.
+%\include{Capitulos/2_estructura_y_estilo}
+
+%---------------------------------------
+% Capítulo 3: 
+%---------------------------------------
+% Resolución del problema a grandes dimensiones.
+%\include{Capitulos/3_presentacion_y_formato}
+
+%---------------------------------------
+% Capítulo 4: CONCLUSIONES
+%---------------------------------------
+% Análisis de los resultados obtenidos en el capítulo 3
+%\include{Capitulos/4_bibliografia}
+
+%---------------------------------------
+% Capítulo 5: BIBLIOGRAFÍA
+%---------------------------------------
+%\include{Capitulos/4_bibliografia}
+
+%--------------- CUERPO DEL DOCUMENTO ----------------
+
+
+%---------------------------
+% BIBLIOGRAFÍA
+% ---
+
+%%%%%%%%%%%%%%%%
+\renewcommand{\refname}{\thesection \ \ BIBLIOGRAFÍA}	% Título en el Header de la sección BIBLIOGRAFÍA.
+\section{BIBLIOGRAFÍA}
+	\nocite{*} 			% Comando para compilar las referencias cuando no se han realizado referencias a estas.
+%%%%%%%%%%%%%%%%
+
+%---
+\input{bibliografia}
+%---------------------------
+
+
+%--------------- ANEXOS ----------------
+
+%%%%%%%%%%%%%%%%% 
+\newpage
+\appendix
+\addappheadtotoc
+\appendixpage
+%%%%%%%%%%%%%%%%%
+
+%---------------------------------------
+% EJEMPLO DE CÓDIGO DE MATLAB
+%---------------------------------------
+\include{Anexo/A1_ejemplo_matlab}
+
+
+%--------------- ANEXOS ----------------
+
+% -------------------%
+% -------------------%
+\end{document}%------%
+% -------------------%
+% -------------------%
