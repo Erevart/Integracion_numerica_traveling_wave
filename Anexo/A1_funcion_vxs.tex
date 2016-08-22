@@ -1,0 +1,128 @@
+%---------------------------------------
+\section{CÁLCULO DE LA VELOCIDAD PARA ONDAS PEQUEÑAS} \label{anex:Anexo1}
+%---------------------------------------
+A continuación se muestra la función desarrollada para el cálculo de la velocidad de avance cuando se supone que las oscilaciones son pequeñas y la longitud de onda es similar a la longitud el flagelo.
+
+\begin{lstlisting}[]
+function [ NVx, TVx, t] = vxs(c0,c1,c2,alfa,teorico,Tf,Ts)
+%VXS Calcula la velocidad de avance generada por una onda viajera del
+%   tipo y = (c0 + c1*x^alfa + c2*x^2) * sin((2*pi/lambda)*(x-Vp*t)), bajo
+%   las condiciones de oscilaciones de pequeña señal.
+%
+%   [NVx, TVx, T] = vxs(c0,c1,c2,alfa), NVx, es la velocidad generada por el
+%   movimiento anterior con los coeficientes indicados, calculada mediante
+%   integración numérica. TVx es la velocidad de propulsión calculada de
+%   mediante la expresión algebraica, únicamente es calculada cuando el 
+%   parametro teorico es verdadero. T denota el vector de tiempo.
+%
+%   'Teorico', valor boleano que permite calcular la velocidad mediante su
+%   expresión algebraica. Únicamente válido para alfa = 1.
+%
+%   'Tf', indica el tiempo máximo de vector de tiempo T, que será devuelto.
+%
+%   'Ts', indica el paso de muestro del vector de tiempo.
+%
+%   Ejemplo:
+%       Calcular el valor numérico y téorico.
+%       [ NVC0, TVC0,T] = vxs(4e-6,0,0,1,1);
+%
+%   Ejemplo:
+%       Calcular el valor numérico.
+%       [ NVC1, TVC1,T] = vxs(0,4/24,0,1,0);
+%
+%   Ejemplo:
+%       Calcular velocidad onda viajera fraccionaria.
+%       [ NVF0,~,T] = vxs(0,4e-6/24e-6^.2,0,0.2,0);
+%
+%   Ejemplo:
+%       Calcular velocidad para diferentes tiempos.
+%       [ NVF0,~,T] = vxs(0,4/3*4/24,-4e-6/(3*24e-6^2),1,0,5e-2,1e-5);
+%
+%   
+%   See also QUADGK.
+
+    % -----------------------------
+    % Parametros de Simulación
+    % -----------------------------
+    if (nargin < 5)
+        Ts = 1e-5;      % Tiempo de Muestro
+        Tf = 5e-2;      % Tiempo de Simulación
+        teorico = 0;
+    elseif (nargin < 6)
+        Ts = 1e-5;      % Tiempo de Muestro
+        Tf = 5e-2;      % Tiempo de Simulación    
+    elseif (nargin < 7)
+        Ts = 1e-5;      % Tiempo de Muestro    
+    end
+
+    t = 0:Ts:Tf;        % Vector de tiempo.
+    NVx = [];
+
+    % -----------------------------
+    % Valores de la ecuación diferencial
+    % -----------------------------
+
+    mu = 7e-4;        % Viscosidad del medio. Fuente: Simulation of Swimming
+                      %     Nanorobots in Biological Fluids (ieenano)
+    f=35;             % Frecuencia de propagación.
+    lambda = 24e-6;   % Longitud de onda de la onda viajera.
+    n = 3;            % Numero de ondas simultaneas en el flagelo.      
+    Vp = lambda * f;  % Velocidad de propagación de la onda viajera.
+    R = 0.5e-6;       % Radio de la cabeza 
+    d = 0.2e-6;       % Radio del flagelo
+    L = n*lambda;     % Longitud del flagelo
+
+    % Se puede calcular mirar ABF 
+    % THE PROPULSION OF SEA-URCHIN SPERMATOZOA BY J. GRAY* AND G. J. 
+    CL = - (2*pi*mu)/(log(d/(2*lambda))+(1/2));  
+    CN = 2*CL;
+
+    Cc = 6*pi*mu*R;          % Coeficiente de arrastre de la cabeza
+
+    %% Calculo de la velocidad de avance por integración teórica.
+    % Solo válida para teorico = 1
+
+    if (teorico == 1)
+        
+        TVx = pi * f * ((CN - CL)/CL) *...
+            ( 1/ (1 + (6 * pi * mu * R)/(n * lambda * CL) ) )...
+            * ( -2*pi*c0^2/lambda - 2*pi*c0*c1 - (4*pi*lambda*c0*c2)/3 ...
+            + c0*c1*sin(4*pi*f*t) + c0*c2*sin(4*pi*f*t)...
+            - 2*pi*lambda*c1^2/3 - pi*lambda^2*c1*c2...
+            + (lambda*c1^2/2)*sin(4*pi*f*t) + (lambda^2)*c1*c2*sin(4*pi*f*t)...
+            - (2*pi*lambda^3*c2^2)/5 + (lambda^3*c2^2/2)*sin(4*pi*f*t) );
+    else
+        TVx = 0;
+    end
+
+    %% Calculo de la velocidad de avance por integración numérica.
+
+    % Vx = (n * (CN - CL)) / (Cc + n * lambda * CL) * ( dy / dt * dy/dx dx)
+    % Vx = |------------- vx_coeff ---------------| * |------ vx_dx -------|
+    %                                         |-- dy_dt * (dy_dx1 + dy_dx2) --|
+
+    vx_coeff = (  (1/lambda) * (CN - CL) / CL )...
+                * ( 1 / (1 + Cc/ ( n * lambda * CL) ) ) ;
+
+    for i=1:length(t);
+
+        dy_dt =@(x) -(2*pi*Vp/lambda) * (c0 + c1.*x.^alfa  + c2.*x.^2)...
+                    .* cos( (2*pi/lambda) * (x - Vp*t(i)) );
+
+        dy_dx1 =@(x) (2*pi/lambda) .* (c0 + c1.*x.^alfa + c2.*x.^2)...
+                    .* cos( (2*pi/lambda) * (x - Vp.*t(i)) );
+
+        dy_dx2 =@(x) (2*c2.*x + alfa.*c1.*x.^(alfa-1))...
+                    .* sin( (2*pi/lambda) * (x - Vp.*t(i)) ); 
+
+        vx_dx =@(x) dy_dt(x) .* (dy_dx1(x) + dy_dx2(x));                                     
+
+        % Función de integración numérica -- quadgk
+        % Numerically evaluate integral, adaptive Gauss-Kronrod quadrature.
+        NVx = [NVx  quadgk(vx_dx,0,lambda)];
+    end
+
+    NVx = NVx .* vx_coeff;
+    
+end
+\end{lstlisting}
