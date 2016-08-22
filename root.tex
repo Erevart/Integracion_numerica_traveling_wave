@@ -31,7 +31,7 @@
 %---------------------------------------
 % Paquetes
 %---------------------------------------
-\usepackage[spanish]{babel}
+\usepackage[spanish, es-tabla]{babel}
 \usepackage{vmargin}													% Margenes
 \usepackage{setspace}
 \usepackage{fancyhdr}			   										% Cabeceras
@@ -118,10 +118,11 @@
 % --------------------
 % Epigrafe Tablas y Figuras
 % ---------------------
+%\renewcommand{\listtablename}{Índice de tablas}					   % Cambia la palabra "Índice de cuadros" por "Índice de tablas"
+%\renewcommand{\tablename}{Tabla} 											% Cambia la palabra "Cuadro" por "Tabla"
 \captionsetup[figure]{margin=40pt,labelfont={bf,footnotesize},textfont={bf,footnotesize},labelsep=space}
 \captionsetup[table]{margin=40pt,labelfont={bf,footnotesize},textfont={bf,footnotesize},labelsep=space}
 
-\renewcommand{\tablename}{Tabla} 											% Cambia la palabra "Cuadro" por "Tabla"
 \renewcommand\thefigure{\arabic{section}.\arabic{figure}} 			% Genera numeración X.Y
 \renewcommand\thetable{\arabic{section}.\arabic{table}} 			% Genera numeración X.Y
 
@@ -129,6 +130,7 @@
 \numberwithin{figure}{section} 													% Hace que la primera figura de cada sección X sea X.1
 \numberwithin{table}{section} 														% Hace que la primera tabla de cada sección X sea X.1
 \numberwithin{equation}{section}
+
 
 % ------------------------
 % Nueva Seccion por pagina
@@ -277,27 +279,23 @@
 \include{Capitulos/1_introduccion}
 
 %---------------------------------------
-% Capítulo 2: 
+% Capítulo 2: VELOCIDAD DE AVANCE DE ONDAS DE PEQUEÑA AMPLITUD
 %---------------------------------------
 % Resolución del problema a pequeñas dimensiones. Se desprecian los términos cuadráticos.
-%\include{Capitulos/2_estructura_y_estilo}
+\include{Capitulos/2_Velocidad_ondas_pequenas}
 
 %---------------------------------------
-% Capítulo 3: 
+% Capítulo 3: VELOCIDAD DE AVANCE DE ONDAS DE GRAN AMPLITUD
 %---------------------------------------
 % Resolución del problema a grandes dimensiones.
-%\include{Capitulos/3_presentacion_y_formato}
+\include{Capitulos/3_Velocidad_ondas_relativas_pequenas}
 
 %---------------------------------------
 % Capítulo 4: CONCLUSIONES
 %---------------------------------------
-% Análisis de los resultados obtenidos en el capítulo 3
-%\include{Capitulos/4_bibliografia}
+% Análisis de los resultados obtenidos.
+\include{Capitulos/4_Conclusiones}
 
-%---------------------------------------
-% Capítulo 5: BIBLIOGRAFÍA
-%---------------------------------------
-%\include{Capitulos/4_bibliografia}
 
 %--------------- CUERPO DEL DOCUMENTO ----------------
 
@@ -306,14 +304,18 @@
 % BIBLIOGRAFÍA
 % ---
 
+
 %%%%%%%%%%%%%%%%
-\renewcommand{\refname}{\thesection \ \ BIBLIOGRAFÍA}	% Título en el Header de la sección BIBLIOGRAFÍA.
-\section{BIBLIOGRAFÍA}
-	\nocite{*} 			% Comando para compilar las referencias cuando no se han realizado referencias a estas.
+\renewcommand{\refname}{\thesection \ \ REFERENCIAS}	% Título en el Header de la sección BIBLIOGRAFÍA.
+\section{REFERENCIAS}
+%	\nocite{*} 			% Comando para compilar las referencias cuando no se han realizado referencias a estas.
 %%%%%%%%%%%%%%%%
 
+
 %---
-\input{bibliografia}
+\renewcommand{\bibname}{}
+\bibliographystyle{IEEEtran}
+\bibliography{All_bib.bib}
 %---------------------------
 
 
@@ -323,13 +325,38 @@
 \newpage
 \appendix
 \addappheadtotoc
-\appendixpage
+%\appendixpage
 %%%%%%%%%%%%%%%%%
 
 %---------------------------------------
-% EJEMPLO DE CÓDIGO DE MATLAB
+% Portada Anexos
+\newcounter {pageAnexo}
+\setcounter{pageAnexo}{\thepage}
+\stepcounter{pageAnexo}
+\input{Portada/Portada_Anexos}
+\setcounter{page}{\thepageAnexo}	
 %---------------------------------------
-\include{Anexo/A1_ejemplo_matlab}
+
+%---------------------------------------
+% Anexo 1: CÁLCULO DE LA VELOCIDAD PARA ONDAS PEQUEÑAS
+%---------------------------------------	
+\include{Anexo/A1_funcion_vxs}
+
+%---------------------------------------
+% Anexo 2: REPRESENTACIÓN DE RESULTADOS DE ONDA PEQUEÑA
+%---------------------------------------	
+\include{Anexo/A2_analisis_vxs}
+
+%---------------------------------------
+% Anexo 3: CÁLCULO DE LA VELOCIDAD PARA ONDAS DE GRAN AMPLITUD
+%---------------------------------------	
+\include{Anexo/A3_funcion_vxb}
+
+%---------------------------------------
+% Anexo 4: REPRESENTACIÓN RESULTADOS ONDA DE GRAN ONDA AMPLITUD
+%---------------------------------------	
+\include{Anexo/A4_analisis_vxb}
+
 
 
 %--------------- ANEXOS ----------------
