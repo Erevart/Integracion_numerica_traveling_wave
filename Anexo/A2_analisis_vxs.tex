@@ -1,0 +1,146 @@
+%---------------------------------------
+\section{REPRESENTACIÓN DE RESULTADOS DE ONDA PEQUEÑA} \label{anex:Anexo2}
+%---------------------------------------
+A continuación se muestra el script desarrollado para la representación y cálculo de la velocidad de avance cuando se supone que las oscilaciones son pequeñas y los términos de segundo orden pueden ser obviados.
+
+\begin{lstlisting}[]
+%% VERIFICACIÓN Y ANÁLISIS VXS
+% Este script realiza la representación de diferentes tipos de ondas
+% viajeras, y calcula la velocidad de avance generada por cada una de
+% ellas. Realizando posteriormente una gráfica de comparativa de
+% velocidades.
+% Cálculos realizados en este script atiendes nas consideraciones de onda
+% de pequeña amplitud.
+
+%% Representación movimiento de onda viajera clasico
+figure(1)
+print_traveling_wave(4e-6,0,0,1,[  0    0.4470    0.7410]);
+hold on
+
+print_traveling_wave(0,4/24,0,1,[0.4660    0.6740    0.1880]);
+
+% Para C1 y C2, n y m son multiplos de la longitud de onda.  
+
+% C1 = (A / (n*lambda) ) + ( m / (m - n) ) 
+%    * (A / (m * lambda) - n * A / (m * lambda) )
+
+% C2 = ( m / (m - n) ) * (A / ( n * m * lambda^2) - A / (m * lambda^2) )
+
+% Para n = 1 y m = 3
+print_traveling_wave(0,4/3*4/24,-4e-6/(3*24e-6^2),1,[0.6350,0.0780,0.1840]);
+
+% Para n = 1 y m = 2
+%print_traveling_wave(0,3/2*4/24,-4e-6/(2*24e-6^2),1,[0.6350,0.0780,0.1840]);
+hold off
+
+%% Representación movimiento de onda viajera fraccionario
+figure(2)
+print_traveling_wave(4e-6,0,0,1,[  0    0.4470    0.7410]);
+hold on
+print_traveling_wave(0,4e-6/24e-6^.2,0,0.2,[0.8500    0.3250    0.0980]);
+print_traveling_wave(0,4e-6/24e-6^.4,0,0.4,[0.9290    0.6940    0.1250]);
+print_traveling_wave(0,4e-6/24e-6^.6,0,0.6,[0.4940    0.1840    0.5560]);
+print_traveling_wave(0,4/24,0,1,[0.4660    0.6740    0.1880]);
+hold off
+
+
+%% Verificación y validación del algoritmo de integración numérica.
+clear all;
+% Vector de tiempo
+t = [];
+
+% Cálculo velocidad de avance
+[ NVC0, TVC0,t] = vxs(4e-6,0,0,1,1);
+[ NVC1, TVC1,~] = vxs(0,4/24,0,1,1);
+[ NVC2, TVC2,t] = vxs(0,4/3*4/24,-4e-6/(3*24e-6^2),1,1);
+[ NVF0,~,~] = vxs(0,4e-6/24e-6^.2,0,0.2,0);
+[ NVF1,~,~] = vxs(0,4e-6/24e-6^.4,0,0.4,0);
+[ NVF2,~,~] = vxs(0,4e-6/24e-6^.6,0,0.6,0);
+
+
+%% Representación de los resultados de velocidad
+% Comparación de velocidades para C0
+figure(3)
+subplot(211)
+plot(t,TVC0.*1e6,'Linewidth',4)
+hold on
+plot(t,NVC0.*1e6,'--r','Linewidth',4);
+hold off
+grid
+ylabel('Velocidad ($\mu$m/s)','Interpreter','latex','FontSize',40)
+title('Velocidad de avance para c$_0$','Interpreter','latex','FontSize',44)
+tiy=get(gca,'ytick')';
+set(gca, 'fontsize', 44,'yticklabel',num2str(tiy,'%.2f'));
+legend('Valor Teórico','Valor Numérico');
+
+subplot(212)
+% RMSE
+plot(t,sqrt(((NVC0 - TVC0).^2)./length(TVC0)).*1e2,'Linewidth',1)
+grid
+ylabel('RMSE (\%)','Interpreter','latex','FontSize',40)
+xlabel('Tiempo (s)','Interpreter','latex','FontSize',40)
+set(gca, 'fontsize', 44);
+
+% Comparación de velocidades para C1
+figure(4)
+subplot(211)
+plot(t,TVC1.*1e6,'Linewidth',4)
+hold on
+plot(t,NVC1.*1e6,'--r','Linewidth',4);
+hold off
+grid
+ylabel('Velocidad ($\mu$m/s)','Interpreter','latex','FontSize',40)
+title('Velocidad de avance para c$_1$','Interpreter','latex','FontSize',44)
+set(gca, 'fontsize', 44);
+legend('Valor Teórico','Valor Numérico');
+
+subplot(212)
+% RMSE
+plot(t,sqrt(((NVC1 - TVC1).^2)./length(TVC1)).*1e2,'Linewidth',1)
+grid
+ylabel('RMSE (\%)','Interpreter','latex','FontSize',40)
+xlabel('Tiempo (s)','Interpreter','latex','FontSize',40)
+set(gca, 'fontsize', 44);
+
+
+% Comparación de velocidades para C2
+figure(5)
+subplot(211)
+plot(t,TVC2.*1e6,'Linewidth',4)
+hold on
+plot(t,NVC2.*1e6,'--r','Linewidth',4);
+hold off
+grid
+ylabel('Velocidad ($\mu$m/s)','Interpreter','latex','FontSize',40)
+title('Velocidad de avance para c$_1$ + c$_2$',...
+        'Interpreter','latex','FontSize',44)
+set(gca, 'fontsize', 44);
+legend('Valor Teórico','Valor Numérico');
+
+subplot(212)
+% RMSE
+plot(t,sqrt(((NVC2 - TVC2).^2)./length(TVC2)).*1e2)
+grid
+ylabel('RMSE (\%)','Interpreter','latex','FontSize',40)
+xlabel('Tiempo (s)','Interpreter','latex','FontSize',40)
+set(gca, 'fontsize', 44);
+
+
+%% Representación de ñps resultados de velocidad de onda fraccionaria
+figure(6)
+plot(t,NVC0.*1e6,'Linewidth',4)
+hold on
+plot(t,NVF0.*1e6,'Linewidth',4);
+plot(t,NVF1.*1e6,'Linewidth',4);
+plot(t,NVF2.*1e6,'Linewidth',4);
+plot(t,NVC1.*1e6,'Linewidth',4);
+hold off
+grid
+ylabel('Velocidad ($\mu$m/s)','Interpreter','latex','FontSize',40)
+xlabel('Tiempo (s)','Interpreter','latex','FontSize',40)
+title('Velocidad onda viajera fraccionaria',...
+        'Interpreter','latex','FontSize',44)
+set(gca, 'fontsize', 44);
+legend('Onda armónica','\alpha = 0.2','\alpha = 0.4',...
+        '\alpha = 0.6','\alpha = 1');
+\end{lstlisting}
