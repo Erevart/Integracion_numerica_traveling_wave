@@ -1,0 +1,78 @@
+%---------------------------------------
+\section{REPRESENTACIÓN RESULTADOS ONDA DE GRAN ONDA AMPLITUD} \label{anex:Anexo4}
+%---------------------------------------
+A continuación se muestra el script desarrollado para la representación y cálculo de la velocidad de avance cuando se supone que las oscilaciones de gran amplitud.
+
+\begin{lstlisting}[]
+%% ANÁLISIS VXB
+% Este script realiza la representación de diferentes tipos de ondas
+% viajeras, y calcula la velocidad de avance generada por cada una de
+% ellas. Realizando posteriormente una gráfica de comparativa de
+% velocidades.
+% Cálculos realizados en este script atiendes nas consideraciones de onda
+% de gran amplitud.
+
+%% Representación movimiento de onda viajera analizados
+figure(1)
+print_traveling_wave(4e-6,0,0,1,[  0    0.4470    0.7410]);
+hold on
+print_traveling_wave(0,4/24,0,1,[0.4660    0.6740    0.1880]);
+
+% Para C1 y C2, n y m son multiplos de la longitud de onda.  
+
+% C1 = (A / (n*lambda) ) + ( m / (m - n) )
+%    * (A / (m * lambda) - n * A / (m * lambda) )
+
+% C2 = ( m / (m - n) ) * (A / ( n * m * lambda^2) - A / (m * lambda^2) )
+
+% Para n = 1 y m = 3
+print_traveling_wave(0,4/3*4/24,-4e-6/(3*24e-6^2),1,[0.6350,0.0780,0.1840]);
+
+% Para n = 1 y m = 2
+%print_traveling_wave(0,3/2*4/24,-4e-6/(2*24e-6^2),1,[0.6350,0.0780,0.1840]);
+
+% Ondas viajeras fraccionarias
+print_traveling_wave(0,4e-6/24e-6^.01,0,0.01,[0.6350    0.0780    0.1840]);
+print_traveling_wave(0,4e-6/24e-6^.05,0,0.05,[0.3010    0.7450    0.9330]);
+print_traveling_wave(0,4e-6/24e-6^.1,0,0.1,[0.7500    0.7500         0]);
+print_traveling_wave(0,4e-6/24e-6^.2,0,0.2,[0.8500    0.3250    0.0980]);
+print_traveling_wave(0,4e-6/24e-6^.4,0,0.4,[0.9290    0.6940    0.1250]);
+print_traveling_wave(0,4e-6/24e-6^.6,0,0.6,[0.4940    0.1840    0.5560]);
+hold off
+
+%% Verificación y validación del algoritmo de integración numérica.
+clear all;
+% Vector de tiempo
+t = [];
+[ VC0,t] = vxb(4e-6,0,0,1);
+[ VC1,~] = vxb(0,4/24,0,1);
+[ VC2,~] = vxb(0,4/3*4/24,-4e-6/(3*24e-6^2),1);
+[ VF0,~] = vxb(0,4e-6/24e-6^.2,0,0.2);
+[ VF1,~] = vxb(0,4e-6/24e-6^.4,0,0.4);
+[ VF2,~] = vxb(0,4e-6/24e-6^.6,0,0.6);
+[ VF3,~] = vxb(0,4e-6/24e-6^.1,0,0.1);
+[ VF4,~] = vxb(0,4e-6/24e-6^.05,0,0.05);
+[ VF5,~] = vxb(0,4e-6/24e-6^.01,0,0.01);
+
+%% Representación de los resultados de velocidad de onda fraccionaria
+figure(6)
+plot(t,VC0.*1e6,'Linewidth',4)
+hold on
+plot(t,VF0.*1e6,'Linewidth',4);
+plot(t,VF1.*1e6,'Linewidth',4);
+plot(t,VF2.*1e6,'Linewidth',4);
+plot(t,VF3.*1e6,'Linewidth',4);
+plot(t,VF4.*1e6,'Linewidth',4);
+plot(t,VF5.*1e6,'Linewidth',4);
+plot(t,VC1.*1e6,'Linewidth',4);
+plot(t,VC2.*1e6,'Linewidth',4);
+hold off
+grid
+ylabel('Velocidad ($\mu$m/s)','Interpreter','latex','FontSize',40)
+xlabel('Tiempo (s)','Interpreter','latex','FontSize',40)
+title('Velocidad onda viajera fraccionaria',...
+        'Interpreter','latex','FontSize',44)
+set(gca, 'fontsize', 44);
+legend('Onda armónica','\alpha = 0.2','\alpha = 0.4','\alpha = 0.6',...
+ '\alpha = 0.1','\alpha = 0.05','\alpha = 0.01','\alpha = 1','C_1 + C_2');
+ \end{lstlisting}
