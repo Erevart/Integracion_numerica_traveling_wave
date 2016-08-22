@@ -1,0 +1,108 @@
+%---------------------------------------
+\section{CÁLCULO DE LA VELOCIDAD PARA ONDAS DE GRAN AMPLITUD} \label{anex:Anexo1}
+%---------------------------------------
+A continuación se muestra la función desarrollada para el cálculo de la velocidad de avance cuando se supone que las oscilaciones de gran amplitud.
+
+\begin{lstlisting}[]
+function [Vx, T] = vxb(c0,c1,c2,alfa,Tf,Ts)
+%VXB Calcula la velocidad de avance generada por una onda viajera del
+%   tipo y = (c0 + c1*x^alfa + c2*x^2) * sin((2*pi/lambda)*(x-Vp*t)), bajo
+%   las condiciones de oscilaciones de gran señal.
+%   [NVx, TVx, T] = vxs(c0,c1,c2,alfa), NVx, es la velocidad generada por el
+%   movimiento anterior con los coeficientes indicados, calculada mediante
+%   integración numérica. T denota el vector de tiempo.
+%
+%   'Tf', indica el tiempo máximo de vector de tiempo T, que será devuelto.
+%
+%   'Ts', indica el paso de muestro del vector de tiempo.
+%
+%   Ejemplo:
+%       Calcular el valor numérico.
+%       [ NVC0 T] = vxb(4e-6,0,0,1);
+%
+%   Ejemplo:
+%       Calcular el valor numérico.
+%       [ NVC1, T] = vxb(0,4/24,0,1);
+%
+%   Ejemplo:
+%       Calcular velocidad onda viajera fraccionaria.
+%       [ NVF0,T] = vxb(0,4e-6/24e-6^.2,0,0.2);
+%
+%   Ejemplo:
+%       Calcular velocidad para diferentes tiempos.
+%       [ NVF0,T] = vxb(0,4/3*4/24,-4e-6/(3*24e-6^2),1,5e-2,1e-5);
+%
+%   
+%   See also QUADGK.
+
+    % -----------------------------
+    % Parametros de Simulación
+    % -----------------------------
+    if (nargin < 5)
+        Ts = 1e-5;      % Tiempo de Muestro
+        Tf = 5e-2;      % Tiempo de Simulación    
+    elseif (nargin < 6)
+        Ts = 1e-5;      % Tiempo de Muestro    
+    end
+
+    t = 0:Ts:Tf;        % Vector de tiempo.
+    Vx = [];
+
+    % -----------------------------
+    % Valores de la ecuación diferencial
+    % -----------------------------
+
+    mu = 7e-4;        % Viscosidad del medio. Fuente: Simulation of Swimming
+                      %     Nanorobots in Biological Fluids (ieenano)
+    f=35;             % Frecuencia de propagación.
+    lambda = 24e-6;   % Longitud de onda de la onda viajera.
+    n = 3;            % Numero de ondas simultaneas en el flagelo.      
+    Vp = lambda * f;  % Velocidad de propagación de la onda viajera.
+    R = 0.5e-6;       % Radio de la cabeza 
+    d = 0.2e-6;       % Radio del flagelo
+    L = n*lambda;     % Longitud del flagelo
+
+    % Se puede calcular mirar ABF 
+    % THE PROPULSION OF SEA-URCHIN SPERMATOZOA BY J. GRAY* AND G. J. 
+    CL = - (2*pi*mu)/(log(d/(2*lambda))+(1/2));  
+    CN = 2*CL;
+
+    Cc = 6*pi*mu*R;          % Coeficiente de arrastre de la cabeza
+
+  
+    %% Calculo de la velocidad de avance por integración numérica.
+    % Sea A = (dy/dx)^2
+    
+    % Vx =  (CN - CL) / sqrt(1 + A) * dy_dt * dy_dx dx 
+    %       / ( Ch/n +  (CL + CN* A) / sqrt(1 + A) )
+
+    for i=1:length(t);
+
+      dy_dt =@(x) -(2*pi*Vp/lambda) * (c0 + c1.*x.^alfa  + c2.*x.^2)...
+                  .* cos( (2*pi/lambda) * (x - Vp*t(i)) );
+      
+      dy_dx1 =@(x) (2*pi/lambda) .* (c0 + c1.*x.^alfa + c2.*x.^2)...
+                   .* cos( (2*pi/lambda) * (x - Vp.*t(i)) );
+      
+      dy_dx2 =@(x) (2*c2.*x + alfa.*c1.*x.^(alfa-1))...
+                   .* sin( (2*pi/lambda) * (x - Vp.*t(i)) ); 
+
+      A = @(x) (dy_dx1(x) + dy_dx2(x)) .* (dy_dx1(x) + dy_dx2(x));
+
+      vx_dx_num =@(x) ( (CN - CL) ./ sqrt(1 + A(x) ) )...
+                      .*  dy_dt(x) .* ( dy_dx1(x) + dy_dx2(x));
+                  
+      vx_dx_dem =@(x)  ( CL + CN * A(x) ) ./ sqrt( 1 + A(x) ) ;
+  
+
+      % Función de integración numérica -- quadgk
+      % Numerically evaluate integral, adaptive Gauss-Kronrod quadrature.
+      int_num = quadgk(vx_dx_num,0,lambda);
+      int_dem = quadgk(vx_dx_dem,0,lambda);
+
+      Vx = [ Vx int_num / ( Cc/n + int_dem )];
+    end
+
+    
+end
+\end{lstlisting}
